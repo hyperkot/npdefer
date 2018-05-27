@@ -1,0 +1,24 @@
+{
+  "name": "npdefer",
+  "version": "1.0.0",
+  "description": "Most straight-forward and simple implementation of 'Deferred Object' concept based on native promises",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/hyperkot/npdefer.git"
+  },
+  "keywords": [
+    "deferred",
+    "promise",
+    "async"
+  ],
+  "author": "hyperkot",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/hyperkot/npdefer/issues"
+  },
+  "homepage": "https://github.com/hyperkot/npdefer#readme"
+}
