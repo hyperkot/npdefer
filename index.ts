@@ -22,7 +22,7 @@ class Deferred<T = any> {
             }
         } else {
             this._promise = new Promise(
-                (resolve: (result?: T) => void, reject: (error?: Error | any) => void) => {
+                (resolve: (result?: T | PromiseLike<T>) => void, reject: (error?: Error | any) => void) => {
                     this.resolvePromise = resolve;
                     this.rejectPromise = reject;
                 }
