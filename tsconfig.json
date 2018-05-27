@@ -5,7 +5,8 @@
         "module": "commonjs" /* Specify module code generation: 'none', 'commonjs', 'amd', 'system', 'umd', 'es2015', or 'ESNext'. */,
         "lib": [
             "es2015",
-            "dom"
+            "dom",
+            "scripthost"
         ] /* Specify library files to be included in the compilation. */,
         // "allowJs": true,                       /* Allow javascript files to be compiled. */
         // "checkJs": true,                       /* Report errors in .js files. */
@@ -53,6 +54,7 @@
         // "emitDecoratorMetadata": true,         /* Enables experimental support for emitting type metadata for decorators. */
     },
     "files": [
-        "index.ts"
+        "index.ts",
+        "test/index.ts"
     ]
 }

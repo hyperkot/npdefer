@@ -2,35 +2,16 @@
 Object.defineProperty(exports, "__esModule", { value: true });
 /**
  * The most simple implementation of deferred concept based on native promises.
+ * Basically creates a promise and stores resolve/reject handlers internaly.
  */
 var Deferred = /** @class */ (function () {
-    /**
-     * Usually deferred objects are created without arguments. You may pass
-     * an argument to create an initially resolved or rejected deferred.
-     * If you pass an instance of Error than this deferred will be initialy
-     * rejected otherwise it will be initialy resolved
-     */
-    function Deferred(resolution) {
+    function Deferred() {
         var _this = this;
         this.promiseStatus = Deferred.Pending;
-        if (arguments.length) {
-            this.rejectPromise = Deferred.noop;
-            this.resolvePromise = Deferred.noop;
-            if (resolution instanceof Error) {
-                this._promise = Promise.reject(resolution);
-                this.promiseStatus = Deferred.Rejected;
-            }
-            else {
-                this._promise = Promise.resolve(resolution);
-                this.promiseStatus = Deferred.Resolved;
-            }
-        }
-        else {
-            this._promise = new Promise(function (resolve, reject) {
-                _this.resolvePromise = resolve;
-                _this.rejectPromise = reject;
-            });
-        }
+        this._promise = new Promise(function (resolve, reject) {
+            _this.resolvePromise = resolve;
+            _this.rejectPromise = reject;
+        });
     }
     Object.defineProperty(Deferred.prototype, "promise", {
         /**
@@ -63,6 +44,7 @@ var Deferred = /** @class */ (function () {
             this.promiseStatus = Deferred.Resolved;
             this.resolvePromise(result);
         }
+        return this;
     };
     /**
      * Rejects underlying native promise. Works the same way as the
@@ -73,6 +55,7 @@ var Deferred = /** @class */ (function () {
             this.promiseStatus = Deferred.Rejected;
             this.rejectPromise(error);
         }
+        return this;
     };
     Deferred.noop = function () { };
     return Deferred;

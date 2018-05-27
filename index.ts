@@ -1,33 +1,19 @@
 
 /**
  * The most simple implementation of deferred concept based on native promises.
+ * Basically creates a promise and stores resolve/reject handlers internaly.
  */
 class Deferred<T = any> {
-    /**
-     * Usually deferred objects are created without arguments. You may pass
-     * an argument to create an initially resolved or rejected deferred.
-     * If you pass an instance of Error than this deferred will be initialy
-     * rejected otherwise it will be initialy resolved
-     */
-    constructor(resolution?: T | Error) {
-        if (arguments.length) {
-            this.rejectPromise = Deferred.noop;
-            this.resolvePromise = Deferred.noop;
-            if (resolution instanceof Error) {
-                this._promise = Promise.reject(resolution);
-                this.promiseStatus = Deferred.Rejected;
-            } else {
-                this._promise = Promise.resolve(resolution);
-                this.promiseStatus = Deferred.Resolved;
+    constructor() {
+        this._promise = new Promise(
+            (
+                resolve: (result?: T | PromiseLike<T>) => void,
+                reject: (error?: Error | any) => void
+            ) => {
+                this.resolvePromise = resolve;
+                this.rejectPromise = reject;
             }
-        } else {
-            this._promise = new Promise(
-                (resolve: (result?: T | PromiseLike<T>) => void, reject: (error?: Error | any) => void) => {
-                    this.resolvePromise = resolve;
-                    this.rejectPromise = reject;
-                }
-            );
-        }
+        );
     }
 
     /**
@@ -55,7 +41,7 @@ class Deferred<T = any> {
             this.promiseStatus = Deferred.Resolved;
             this.resolvePromise(result);
         }
-
+        return this;
     }
 
     /**
@@ -67,6 +53,7 @@ class Deferred<T = any> {
             this.promiseStatus = Deferred.Rejected;
             this.rejectPromise(error);
         }
+        return this;
     }
 
     private _promise: Promise<T>;

@@ -4,7 +4,8 @@
   "description": "Most straight-forward and simple implementation of 'Deferred Object' concept based on native promises",
   "main": "index.js",
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1"
+    "build": "tsc",
+    "test": "tsc && node test/index"
   },
   "repository": {
     "type": "git",
@@ -20,5 +21,8 @@
   "bugs": {
     "url": "https://github.com/hyperkot/npdefer/issues"
   },
-  "homepage": "https://github.com/hyperkot/npdefer#readme"
+  "homepage": "https://github.com/hyperkot/npdefer#readme",
+  "devDependencies": {
+    "testnow": "^1.0.1"
+  }
 }

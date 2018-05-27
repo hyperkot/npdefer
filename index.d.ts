@@ -1,14 +1,9 @@
 /**
  * The most simple implementation of deferred concept based on native promises.
+ * Basically creates a promise and stores resolve/reject handlers internaly.
  */
 declare class Deferred<T = any> {
-    /**
-     * Usually deferred objects are created without arguments. You may pass
-     * an argument to create an initially resolved or rejected deferred.
-     * If you pass an instance of Error than this deferred will be initialy
-     * rejected otherwise it will be initialy resolved
-     */
-    constructor(resolution?: T | Error);
+    constructor();
     /**
      * Returns native promise of this deferred object
      */
@@ -25,12 +20,12 @@ declare class Deferred<T = any> {
      * Resolves underlying native promise. Works the same way as the
      * "resolve" method passed to callback of native promise constructor.
      */
-    resolve(result?: PromiseLike<T> | T): void;
+    resolve(result?: PromiseLike<T> | T): this;
     /**
      * Rejects underlying native promise. Works the same way as the
      * "reject" method passed to callback of native promise constructor.
      */
-    reject(error?: Error | any): void;
+    reject(error?: Error | any): this;
     private _promise;
     private resolvePromise;
     private rejectPromise;
