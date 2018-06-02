@@ -7,6 +7,28 @@ Object.defineProperty(exports, "__esModule", { value: true });
 var Deferred = /** @class */ (function () {
     function Deferred() {
         var _this = this;
+        /**
+         * Resolves underlying native promise. Works the same way as the
+         * "resolve" method passed to callback of native promise constructor.
+         */
+        this.resolve = function (result) {
+            if (_this.status === Deferred.Pending) {
+                _this.promiseStatus = Deferred.Resolved;
+                _this.resolvePromise(result);
+            }
+            return _this;
+        };
+        /**
+         * Rejects underlying native promise. Works the same way as the
+         * "reject" method passed to callback of native promise constructor.
+         */
+        this.reject = function (error) {
+            if (_this.status === Deferred.Pending) {
+                _this.promiseStatus = Deferred.Rejected;
+                _this.rejectPromise(error);
+            }
+            return _this;
+        };
         this.promiseStatus = Deferred.Pending;
         this._promise = new Promise(function (resolve, reject) {
             _this.resolvePromise = resolve;
@@ -35,27 +57,15 @@ var Deferred = /** @class */ (function () {
         enumerable: true,
         configurable: true
     });
-    /**
-     * Resolves underlying native promise. Works the same way as the
-     * "resolve" method passed to callback of native promise constructor.
-     */
-    Deferred.prototype.resolve = function (result) {
-        if (this.status === Deferred.Pending) {
-            this.promiseStatus = Deferred.Resolved;
-            this.resolvePromise(result);
-        }
-        return this;
+    Deferred.prototype.catch = function (callback) {
+        var d = new Deferred();
+        this.promise.catch(callback).then(d.resolve, d.reject);
+        return d;
     };
-    /**
-     * Rejects underlying native promise. Works the same way as the
-     * "reject" method passed to callback of native promise constructor.
-     */
-    Deferred.prototype.reject = function (error) {
-        if (this.status === Deferred.Pending) {
-            this.promiseStatus = Deferred.Rejected;
-            this.rejectPromise(error);
-        }
-        return this;
+    Deferred.prototype.then = function (onSucceed, onFail) {
+        var d = new Deferred();
+        this.promise.then(onSucceed, onFail).then(d.resolve, d.reject);
+        return d;
     };
     Deferred.noop = function () { };
     return Deferred;

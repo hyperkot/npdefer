@@ -2,7 +2,7 @@
  * The most simple implementation of deferred concept based on native promises.
  * Basically creates a promise and stores resolve/reject handlers internaly.
  */
-declare class Deferred<T = any> {
+declare class Deferred<T = any> implements PromiseLike<T> {
     constructor();
     /**
      * Returns native promise of this deferred object
@@ -20,12 +20,14 @@ declare class Deferred<T = any> {
      * Resolves underlying native promise. Works the same way as the
      * "resolve" method passed to callback of native promise constructor.
      */
-    resolve(result?: PromiseLike<T> | T): this;
+    resolve: (result?: T | PromiseLike<T>) => this;
+    catch<T2 = any>(callback: (err: Error | any) => T2 | PromiseLike<T2>): Deferred<T2>;
+    then<TR1 = T, TR2 = never>(onSucceed?: (res: T) => TR1 | PromiseLike<TR1>, onFail?: (err: Error | any) => TR2 | PromiseLike<TR2>): Deferred<TR1 | TR2>;
     /**
      * Rejects underlying native promise. Works the same way as the
      * "reject" method passed to callback of native promise constructor.
      */
-    reject(error?: Error | any): this;
+    reject: (error?: any) => this;
     private _promise;
     private resolvePromise;
     private rejectPromise;
