@@ -21,8 +21,8 @@ declare class Deferred<T = any> implements PromiseLike<T> {
      * "resolve" method passed to callback of native promise constructor.
      */
     resolve: (result?: T | PromiseLike<T>) => this;
-    catch<T2 = any>(callback: (err: Error | any) => T2 | PromiseLike<T2>): Deferred<T2>;
-    then<TR1 = T, TR2 = never>(onSucceed?: (res: T) => TR1 | PromiseLike<TR1>, onFail?: (err: Error | any) => TR2 | PromiseLike<TR2>): Deferred<TR1 | TR2>;
+    catch<TR = any>(callback: (err: Error | any) => TR | PromiseLike<TR>): PromiseLike<TR | T>;
+    then<TR1 = T, TR2 = never>(onSucceed?: (res: T) => TR1 | PromiseLike<TR1>, onFail?: (err: Error | any) => TR2 | PromiseLike<TR2>): PromiseLike<TR1 | TR2>;
     /**
      * Rejects underlying native promise. Works the same way as the
      * "reject" method passed to callback of native promise constructor.
@@ -33,6 +33,8 @@ declare class Deferred<T = any> implements PromiseLike<T> {
     private rejectPromise;
     private promiseStatus;
     private static noop();
+    static resolve<T>(v: T | PromiseLike<T>): Deferred<any>;
+    static reject(e: Error | any): Deferred<any>;
 }
 declare namespace Deferred {
     const Pending = "pending";

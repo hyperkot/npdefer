@@ -58,16 +58,19 @@ var Deferred = /** @class */ (function () {
         configurable: true
     });
     Deferred.prototype.catch = function (callback) {
-        var d = new Deferred();
-        this.promise.catch(callback).then(d.resolve, d.reject);
-        return d;
+        return this.promise.catch(callback);
     };
     Deferred.prototype.then = function (onSucceed, onFail) {
         var d = new Deferred();
-        this.promise.then(onSucceed, onFail).then(d.resolve, d.reject);
-        return d;
+        return this.promise.then(onSucceed, onFail);
     };
     Deferred.noop = function () { };
+    Deferred.resolve = function (v) {
+        return new Deferred().resolve(v);
+    };
+    Deferred.reject = function (e) {
+        return new Deferred().reject(e);
+    };
     return Deferred;
 }());
 (function (Deferred) {

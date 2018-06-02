@@ -44,19 +44,16 @@ class Deferred<T = any> implements PromiseLike<T> {
         return this;
     }
 
-    catch<T2 = any>(callback: (err: Error | any) => T2 | PromiseLike<T2>): Deferred<T2> {
-        const d = new Deferred();
-        this.promise.catch(callback).then(d.resolve, d.reject);
-        return d;
+    catch<TR = any>(callback: (err: Error | any) => TR | PromiseLike<TR>): PromiseLike<TR | T> {
+        return this.promise.catch(callback);
     }
 
     then<TR1 = T, TR2 = never>(
         onSucceed?: (res: T) => TR1 | PromiseLike<TR1>,
         onFail?: (err: Error | any) => TR2 | PromiseLike<TR2>)
-        : Deferred<TR1 | TR2> {
+        : PromiseLike<TR1 | TR2> {
         const d = new Deferred<TR1 | TR2>();
-        this.promise.then(onSucceed, onFail).then(d.resolve, d.reject);
-        return d;
+        return this.promise.then(onSucceed, onFail);
     }
 
     /**
@@ -77,6 +74,14 @@ class Deferred<T = any> implements PromiseLike<T> {
     private promiseStatus: string = Deferred.Pending;
 
     private static noop() { }
+
+    static resolve<T>(v: T | PromiseLike<T>) {
+        return new Deferred().resolve(v);
+    }
+
+    static reject(e: Error | any) {
+        return new Deferred().reject(e);
+    }
 }
 
 namespace Deferred {
