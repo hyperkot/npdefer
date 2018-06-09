@@ -16,6 +16,36 @@ describe('Deferred', function () {
     it('initially pending status', function () {
         var d = new __1.default();
         chai_1.assert.strictEqual(d.status, __1.default.Pending);
+        chai_1.assert.strictEqual(d.isPending, true, 'isPending=true');
+        chai_1.assert.strictEqual(d.isRejected, false, 'isRejected=false');
+        chai_1.assert.strictEqual(d.isResolved, false, 'isResolved=false');
+    });
+    it('correct resolved status and cannot be changed', function () {
+        var d = new __1.default();
+        d.resolve();
+        chai_1.assert.strictEqual(d.status, __1.default.Resolved);
+        chai_1.assert.strictEqual(d.isPending, false);
+        chai_1.assert.strictEqual(d.isRejected, false);
+        chai_1.assert.strictEqual(d.isResolved, true);
+        d.reject();
+        chai_1.assert.strictEqual(d.status, __1.default.Resolved);
+        chai_1.assert.strictEqual(d.isPending, false);
+        chai_1.assert.strictEqual(d.isRejected, false);
+        chai_1.assert.strictEqual(d.isResolved, true);
+    });
+    it('correct rejected status', function () {
+        var d = new __1.default();
+        d.reject();
+        chai_1.assert.strictEqual(d.status, __1.default.Rejected);
+        chai_1.assert.strictEqual(d.isPending, false);
+        chai_1.assert.strictEqual(d.isRejected, true);
+        chai_1.assert.strictEqual(d.isResolved, false);
+        d.resolve();
+        chai_1.assert.strictEqual(d.status, __1.default.Rejected);
+        chai_1.assert.strictEqual(d.isPending, false);
+        chai_1.assert.strictEqual(d.isRejected, true);
+        chai_1.assert.strictEqual(d.isResolved, false);
+        d.catch(function (x) { return x; });
     });
     it('resolve(): passes arg correctly', function (done) {
         var d = new __1.default();
@@ -51,36 +81,30 @@ describe('Deferred', function () {
         d.resolve(b);
         d.reject(c);
         chai_1.assert.strictEqual(d.status, __1.default.Resolved);
-        setTimeout(done, 50);
+        // This is to check that nothing asynchronous happens
+        setTimeout(done, 0);
+    });
+    it('may wrap another promise', function (done) {
+        var testValue = 4234;
+        var d = new __1.default(new Promise(function (resolve, reject) {
+            resolve(testValue);
+        }));
+        d.then(function (val) { return chai_1.assert.equal(val, testValue); }).then(done);
+    });
+    it('may resolve before and independently of wrapped promise', function (done) {
+        var testValue = 42345454;
+        var d = new __1.default(new Promise(function (resolve, reject) {
+            setTimeout(function () {
+                reject();
+                d.reject();
+                chai_1.assert.strictEqual(d.status, __1.default.Resolved);
+                chai_1.assert.strictEqual(d.isPending, false, 'isPending=false');
+                chai_1.assert.strictEqual(d.isRejected, false, 'isRejected=false');
+                chai_1.assert.strictEqual(d.isResolved, true, 'isResolved=true');
+                done();
+            }, 0);
+        }));
+        d.resolve(testValue);
     });
 });
-/*
-test.group("Deferred", () => {
-    test("resolves", () => {
-        const d = new Deferred();
-        d.resolve(true);
-        return d.promise;
-    });
-    test("rejects", () => {
-        const d = new Deferred();
-        d.reject();
-        return d.promise.catch(e => true);
-    });
-    test("resolves", () => {
-        const d = new Deferred();
-        d.resolve(true);
-        return d.promise;
-    });
-});
-
-
-test.run().then(results => {
-    if (results.errors.length) {
-        results.errors.map(err => console.error(err));
-        throw new Error(`Tests failed!`);
-    } else {
-        console.log(`All tests passed!`);
-    }
-});
-*/
 //# sourceMappingURL=index.js.map

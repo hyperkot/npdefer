@@ -13,6 +13,36 @@ describe('Deferred', function () {
     it('initially pending status', function () {
         const d = new Deferred();
         assert.strictEqual(d.status, Deferred.Pending);
+        assert.strictEqual(d.isPending, true, 'isPending=true');
+        assert.strictEqual(d.isRejected, false, 'isRejected=false');
+        assert.strictEqual(d.isResolved, false, 'isResolved=false');
+    });
+    it('correct resolved status and cannot be changed', function () {
+        const d = new Deferred();
+        d.resolve();
+        assert.strictEqual(d.status, Deferred.Resolved);
+        assert.strictEqual(d.isPending, false);
+        assert.strictEqual(d.isRejected, false);
+        assert.strictEqual(d.isResolved, true);
+        d.reject();
+        assert.strictEqual(d.status, Deferred.Resolved);
+        assert.strictEqual(d.isPending, false);
+        assert.strictEqual(d.isRejected, false);
+        assert.strictEqual(d.isResolved, true);
+    });
+    it('correct rejected status', function () {
+        const d = new Deferred();
+        d.reject();
+        assert.strictEqual(d.status, Deferred.Rejected);
+        assert.strictEqual(d.isPending, false);
+        assert.strictEqual(d.isRejected, true);
+        assert.strictEqual(d.isResolved, false);
+        d.resolve();
+        assert.strictEqual(d.status, Deferred.Rejected);
+        assert.strictEqual(d.isPending, false);
+        assert.strictEqual(d.isRejected, true);
+        assert.strictEqual(d.isResolved, false);
+        d.catch(x => x) 
     });
     it('resolve(): passes arg correctly', function (done: MochaDone) {
         const d = new Deferred();
@@ -47,36 +77,31 @@ describe('Deferred', function () {
         d.resolve(b);
         d.reject(c);
         assert.strictEqual(d.status, Deferred.Resolved);
-        setTimeout(done, 50);
-
+        // This is to check that nothing asynchronous happens
+        setTimeout(done, 0);
     });
+    it('may wrap another promise', function (done) {
+        const testValue = 4234;
+        const d = new Deferred(new Promise((resolve, reject) => {
+            resolve(testValue);
+        }));
+        d.then(val => assert.equal(val, testValue)).then(done);
+    });
+    it(
+        'may resolve before and independently of wrapped promise',
+        function (done) {
+            const testValue = 42345454;
+            const d = new Deferred(new Promise((resolve, reject) => {
+                setTimeout(() => {
+                    reject();
+                    d.reject();
+                    assert.strictEqual(d.status, Deferred.Resolved);
+                    assert.strictEqual(d.isPending, false, 'isPending=false');
+                    assert.strictEqual(d.isRejected, false, 'isRejected=false');
+                    assert.strictEqual(d.isResolved, true, 'isResolved=true');
+                    done();
+                }, 0);
+            }));
+            d.resolve(testValue);
+        });
 });
-/*
-test.group("Deferred", () => {
-    test("resolves", () => {
-        const d = new Deferred();
-        d.resolve(true);
-        return d.promise;
-    });
-    test("rejects", () => {
-        const d = new Deferred();
-        d.reject();
-        return d.promise.catch(e => true);
-    });
-    test("resolves", () => {
-        const d = new Deferred();
-        d.resolve(true);
-        return d.promise;
-    });
-});
-
-
-test.run().then(results => {
-    if (results.errors.length) {
-        results.errors.map(err => console.error(err));
-        throw new Error(`Tests failed!`);
-    } else {
-        console.log(`All tests passed!`);
-    }
-});
-*/
